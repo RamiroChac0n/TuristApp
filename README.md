@@ -20,7 +20,7 @@ Aplicación móvil Android para explorar países del mundo y guardar destinos fa
 
 ## API utilizada
 
-**REST Countries** — [https://restcountries.com/v3.1/all](https://restcountries.com/)
+**REST Countries** — [https://restcountries.com/](https://restcountries.com/)
 
 API pública y gratuita, sin necesidad de registro ni API key.
 Campos usados: nombre, capital, región, subregión, población, área, banderas e idiomas.
