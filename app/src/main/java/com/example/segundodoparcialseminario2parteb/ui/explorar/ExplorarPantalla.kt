@@ -17,7 +17,6 @@ import com.example.segundodoparcialseminario2parteb.AplicacionTurismo
 import com.example.segundodoparcialseminario2parteb.datos.remoto.PaisDto
 import com.example.segundodoparcialseminario2parteb.ui.componentes.TarjetaPais
 
-// Pantalla principal que muestra la cuadrícula de países obtenidos de la API
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExplorarPantalla(
@@ -40,6 +39,7 @@ fun ExplorarPantalla(
                 )
             )
         }
+        // Se eliminó bottomBar de aquí para evitar la duplicidad
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -47,7 +47,6 @@ fun ExplorarPantalla(
                 .padding(paddingValues)
                 .padding(horizontal = 12.dp)
         ) {
-            // Barra de búsqueda
             OutlinedTextField(
                 value = textoBusqueda,
                 onValueChange = {
@@ -59,47 +58,27 @@ fun ExplorarPantalla(
                     .padding(vertical = 8.dp),
                 placeholder = { Text("Buscar país...") },
                 leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Buscar"
-                    )
+                    Icon(imageVector = Icons.Default.Search, contentDescription = "Buscar")
                 },
                 singleLine = true
             )
 
-            // Contenido según el estado actual
             when (val estadoActual = estado) {
                 is EstadoExplorar.Cargando -> {
-                    // Indicador de carga centrado
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator()
                     }
                 }
-
                 is EstadoExplorar.Error -> {
-                    // Mensaje de error con botón de reintento
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                text = estadoActual.mensaje,
-                                color = MaterialTheme.colorScheme.error
-                            )
+                            Text(text = estadoActual.mensaje, color = MaterialTheme.colorScheme.error)
                             Spacer(modifier = Modifier.height(8.dp))
-                            Button(onClick = { viewModel.cargarPaises() }) {
-                                Text("Reintentar")
-                            }
+                            Button(onClick = { viewModel.cargarPaises() }) { Text("Reintentar") }
                         }
                     }
                 }
-
                 is EstadoExplorar.Exito -> {
-                    // Cuadrícula de países con animación de aparición
                     AnimatedVisibility(visible = true) {
                         LazyVerticalGrid(
                             columns = GridCells.Fixed(2),
@@ -108,10 +87,7 @@ fun ExplorarPantalla(
                             contentPadding = PaddingValues(bottom = 16.dp)
                         ) {
                             items(estadoActual.paises) { pais ->
-                                TarjetaPais(
-                                    pais = pais,
-                                    onClick = { onPaisSeleccionado(pais) }
-                                )
+                                TarjetaPais(pais = pais, onClick = { onPaisSeleccionado(pais) })
                             }
                         }
                     }

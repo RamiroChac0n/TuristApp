@@ -31,8 +31,13 @@ fun DetallePantalla(
     aplicacion: AplicacionTurismo,
     favoritosViewModel: FavoritosViewModel
 ) {
-    // Controla si el ícono muestra favorito activo o no
-    var esFavorito by remember { mutableStateOf(false) }
+    // Observamos los favoritos para saber si este país ya está guardado
+    val listaFavoritos by favoritosViewModel.favoritos.collectAsState()
+    
+    // El estado de "es favorito" se calcula basándose en si el nombre existe en la BD
+    val esFavorito = remember(listaFavoritos) {
+        listaFavoritos.any { it.nombre == pais.nombre.comun }
+    }
 
     Scaffold(
         topBar = {
@@ -46,14 +51,12 @@ fun DetallePantalla(
                         )
                     }
                 },
-                // Botón para guardar o quitar de favoritos
                 actions = {
                     IconButton(onClick = {
-                        esFavorito = !esFavorito
                         if (esFavorito) {
-                            favoritosViewModel.guardarFavorito(pais.aLugarTuristico())
-                        } else {
                             favoritosViewModel.eliminarFavoritoPorPais(pais.nombre.comun)
+                        } else {
+                            favoritosViewModel.guardarFavorito(pais.aLugarTuristico())
                         }
                     }) {
                         Icon(
@@ -77,9 +80,8 @@ fun DetallePantalla(
                 .fillMaxSize()
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
-                .animateContentSize()   // Animación suave al cambiar contenido
+                .animateContentSize()
         ) {
-            // Bandera grande en la parte superior
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(pais.banderas.png)
@@ -89,56 +91,68 @@ fun DetallePantalla(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
+                    .height(220.dp)
             )
 
-            // Sección de información del país
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
                     text = pais.nombre.oficial,
                     style = MaterialTheme.typography.headlineSmall
                 )
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-                // Filas de información clave
-                FilaInfo("Capital", pais.capital?.firstOrNull() ?: "N/D")
-                FilaInfo("Región", pais.region)
-                FilaInfo("Subregión", pais.subregion ?: "N/D")
-                FilaInfo("Población", "%,d".format(pais.poblacion))
-                FilaInfo("Área", "${pais.area?.let { "%,.0f km²".format(it) } ?: "N/D"}")
-                FilaInfo(
-                    "Idiomas",
-                    pais.idiomas?.values?.joinToString(", ") ?: "N/D"
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                    )
+                ) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        FilaInfo("Capital", pais.capital?.firstOrNull() ?: "N/D")
+                        FilaInfo("Región", pais.region)
+                        FilaInfo("Subregión", pais.subregion ?: "N/D")
+                        FilaInfo("Población", "%,d".format(pais.poblacion))
+                        FilaInfo("Área", pais.area?.let { "%,.0f km²".format(it) } ?: "N/D")
+                        FilaInfo("Idiomas", pais.idiomas?.values?.joinToString(", ") ?: "N/D")
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(24.dp))
+                
+                // Texto de accesibilidad o descripción adicional
+                Text(
+                    text = "Información obtenida de la API oficial de países. Puedes guardar este destino para consultarlo sin conexión más tarde.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
     }
 }
 
-// Componente reutilizable para mostrar un par etiqueta-valor
 @Composable
 private fun FilaInfo(etiqueta: String, valor: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
+            .padding(vertical = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = etiqueta,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.primary
         )
         Text(
             text = valor,
             style = MaterialTheme.typography.bodyMedium
         )
     }
-    HorizontalDivider(thickness = 0.5.dp)
+    if (etiqueta != "Idiomas") {
+        HorizontalDivider(thickness = 0.5.dp, color = MaterialTheme.colorScheme.outlineVariant)
+    }
 }
 
-// Función de extensión para convertir un PaisDto en LugarTuristico (para guardar en Room)
 fun PaisDto.aLugarTuristico(): LugarTuristico {
     return LugarTuristico(
         nombre = this.nombre.comun,

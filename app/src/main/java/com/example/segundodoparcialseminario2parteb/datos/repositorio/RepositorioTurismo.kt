@@ -35,8 +35,6 @@ class RepositorioTurismo(
         dao.actualizar(lugar)
     }
 
-    // --- Operaciones remotas (API) ---
-
     // Obtiene la lista de países desde la API
     suspend fun obtenerPaises() = api.obtenerPaises()
 }

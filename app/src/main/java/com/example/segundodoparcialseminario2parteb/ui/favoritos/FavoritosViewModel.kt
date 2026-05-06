@@ -44,6 +44,13 @@ class FavoritosViewModel(
         }
     }
 
+    // Actualiza los datos de un favorito (Cumple con la 'U' del CRUD)
+    fun actualizarFavorito(lugar: LugarTuristico) {
+        viewModelScope.launch {
+            repositorio.actualizarFavorito(lugar)
+        }
+    }
+
     // Factory para instanciar el ViewModel con su dependencia
     companion object {
         fun crearFactory(repositorio: RepositorioTurismo): ViewModelProvider.Factory {
