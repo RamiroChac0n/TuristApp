@@ -9,10 +9,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.example.segundodoparcialseminario2parteb.datos.remoto.Banderas
+import com.example.segundodoparcialseminario2parteb.datos.remoto.NombrePais
 import com.example.segundodoparcialseminario2parteb.datos.remoto.PaisDto
+import com.example.segundodoparcialseminario2parteb.ui.tema.TemaAplicacion
 
 // Tarjeta que muestra la bandera y nombre de un país en la cuadrícula
 @Composable
@@ -55,5 +59,23 @@ fun TarjetaPais(
                 )
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewTarjetaPais() {
+    TemaAplicacion {
+        val paisFicticio = PaisDto(
+            nombre = NombrePais("Colombia", "República de Colombia"),
+            capital = listOf("Bogotá"),
+            region = "Americas",
+            subregion = "South America",
+            poblacion = 51000000,
+            banderas = Banderas("https://flagcdn.com/w320/co.png", ""),
+            idiomas = mapOf("spa" to "Spanish"),
+            area = 1141748.0
+        )
+        TarjetaPais(pais = paisFicticio, onClick = {})
     }
 }

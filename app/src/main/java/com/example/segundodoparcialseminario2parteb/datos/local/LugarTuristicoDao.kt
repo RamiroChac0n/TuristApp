@@ -17,6 +17,9 @@ interface LugarTuristicoDao {
     @Query("SELECT * FROM lugares_turisticos WHERE id = :id")
     suspend fun obtenerPorId(id: Int): LugarTuristico?
 
+    @Query("DELETE FROM lugares_turisticos WHERE nombre = :nombre")
+    suspend fun eliminarPorNombre(nombre: String)
+
     @Delete
     suspend fun eliminar(lugar: LugarTuristico)
 

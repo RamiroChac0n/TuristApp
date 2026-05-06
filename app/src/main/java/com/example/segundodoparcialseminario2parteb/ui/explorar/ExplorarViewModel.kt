@@ -1,5 +1,6 @@
 package com.example.segundodoparcialseminario2parteb.ui.explorar
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -35,9 +36,11 @@ class ExplorarViewModel(
                 listaPaises = repositorio.obtenerPaises()
                     .sortedBy { it.nombre.comun }
                 _estadoUi.value = EstadoExplorar.Exito(listaPaises)
+                Log.d("ExplorarViewModel", "Países cargados exitosamente: ${listaPaises.size}")
             } catch (e: Exception) {
+                Log.e("ExplorarViewModel", "Error al cargar países", e)
                 _estadoUi.value = EstadoExplorar.Error(
-                    e.message ?: "Error al conectar con el servidor"
+                    "Error de conexión: Verifique su internet e intente de nuevo"
                 )
             }
         }

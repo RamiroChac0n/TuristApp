@@ -25,6 +25,11 @@ class RepositorioTurismo(
         dao.eliminar(lugar)
     }
 
+    // Elimina un favorito por el nombre del país
+    suspend fun eliminarFavoritoPorNombre(nombre: String) {
+        dao.eliminarPorNombre(nombre)
+    }
+
     // Actualiza los datos de un favorito
     suspend fun actualizarFavorito(lugar: LugarTuristico) {
         dao.actualizar(lugar)

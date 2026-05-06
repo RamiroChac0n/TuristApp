@@ -38,11 +38,9 @@ class FavoritosViewModel(
     }
 
     // Elimina un favorito buscándolo por nombre del país
-    // Se usa desde la pantalla de detalle donde solo tenemos el PaisDto
     fun eliminarFavoritoPorPais(nombrePais: String) {
         viewModelScope.launch {
-            val lugar = favoritos.value.find { it.nombre == nombrePais }
-            lugar?.let { repositorio.eliminarFavorito(it) }
+            repositorio.eliminarFavoritoPorNombre(nombrePais)
         }
     }
 

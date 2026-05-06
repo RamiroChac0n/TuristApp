@@ -4,16 +4,25 @@ import android.content.Context
 import com.example.segundodoparcialseminario2parteb.datos.local.BaseDeDatos
 import com.example.segundodoparcialseminario2parteb.datos.remoto.ServicioApi
 import com.example.segundodoparcialseminario2parteb.datos.repositorio.RepositorioTurismo
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 // Contenedor de dependencias manual (sin Hilt)
-// Se instancia una sola vez desde la Application
 class ContenedorApp(context: Context) {
 
-    // Instancia de Retrofit apuntando a la API de países
+    // Cliente HTTP con tiempos de espera personalizados para mejorar la estabilidad
+    private val okHttpClient = OkHttpClient.Builder()
+        .connectTimeout(30, TimeUnit.SECONDS) // Tiempo para establecer conexión
+        .readTimeout(30, TimeUnit.SECONDS)    // Tiempo para recibir datos
+        .writeTimeout(30, TimeUnit.SECONDS)
+        .build()
+
+    // Instancia de Retrofit configurada con el cliente HTTP
     private val retrofit = Retrofit.Builder()
         .baseUrl("https://restcountries.com/v3.1/")
+        .client(okHttpClient)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
