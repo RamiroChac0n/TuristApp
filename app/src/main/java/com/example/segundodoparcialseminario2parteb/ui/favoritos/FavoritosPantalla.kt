@@ -19,10 +19,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.segundodoparcialseminario2parteb.datos.local.LugarTuristico
+import com.example.segundodoparcialseminario2parteb.ui.tema.TemaAplicacion
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,7 +33,24 @@ fun FavoritosPantalla(
     favoritosViewModel: FavoritosViewModel
 ) {
     val favoritos by favoritosViewModel.favoritos.collectAsState()
+    FavoritosContenido(
+        favoritos = favoritos,
+        onRegresar = onRegresar,
+        onEliminar = { favoritosViewModel.eliminarFavorito(it) },
+        onActualizar = { lugar, nuevaDesc -> 
+            favoritosViewModel.actualizarFavorito(lugar.copy(descripcion = nuevaDesc))
+        }
+    )
+}
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FavoritosContenido(
+    favoritos: List<LugarTuristico>,
+    onRegresar: () -> Unit,
+    onEliminar: (LugarTuristico) -> Unit,
+    onActualizar: (LugarTuristico, String) -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -46,7 +65,6 @@ fun FavoritosPantalla(
                 )
             )
         }
-        // Se eliminó bottomBar de aquí para evitar la duplicidad con la barra global
     ) { paddingValues ->
         Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
             if (favoritos.isEmpty()) {
@@ -73,10 +91,8 @@ fun FavoritosPantalla(
                         AnimatedVisibility(visible = true, enter = fadeIn(), exit = fadeOut()) {
                             TarjetaFavorito(
                                 lugar = lugar,
-                                onEliminar = { favoritosViewModel.eliminarFavorito(lugar) },
-                                onActualizar = { nuevaDesc -> 
-                                    favoritosViewModel.actualizarFavorito(lugar.copy(descripcion = nuevaDesc))
-                                }
+                                onEliminar = { onEliminar(lugar) },
+                                onActualizar = { nuevaDesc -> onActualizar(lugar, nuevaDesc) }
                             )
                         }
                     }
@@ -154,6 +170,23 @@ fun TarjetaFavorito(
                 }
             },
             dismissButton = { TextButton(onClick = { mostrarDialogoEliminar = false }) { Text("Cancelar") } }
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewFavoritos() {
+    TemaAplicacion {
+        val listaFicticia = listOf(
+            LugarTuristico(1, "Andorra", "Andorra la Vella", "Europe", "Un país pequeño", ""),
+            LugarTuristico(2, "Colombia", "Bogotá", "Americas", "Tierra del café", "")
+        )
+        FavoritosContenido(
+            favoritos = listaFicticia,
+            onRegresar = {},
+            onEliminar = {},
+            onActualizar = { _, _ -> }
         )
     }
 }
